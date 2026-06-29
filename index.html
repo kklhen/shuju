@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地下偶像报道数据图谱 2021—2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c0c10;
+    --bg2: #13131a;
+    --bg3: #1a1a24;
+    --card: #1e1e2a;
+    --card2: #252535;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e6f0;
+    --text2: #9896b0;
+    --text3: #5c5a78;
+    --accent: #7c6cff;
+    --accent2: #a78bfa;
+    --teal: #2dd4bf;
+    --amber: #f59e0b;
+    --coral: #f87171;
+    --green: #34d399;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Noto Sans SC', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(12,12,16,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 52px;
+  }
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent2);
+    letter-spacing: 0.04em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 0;
+  }
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 0 14px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  .hero-title em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 560px;
+    margin-bottom: 3rem;
+  }
+
+  /* WAVE */
+  .wave-wrap {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 3rem;
+    overflow: hidden;
+  }
+  .wave-wrap canvas { width: 100%; height: 100%; }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 4rem;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .kpi-num {
+    font-family: var(--mono);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .kpi-num span { font-size: 1.2rem; color: var(--accent2); margin-left: 2px; }
+  .kpi-label { font-size: 13px; color: var(--text2); }
+  .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* SECTIONS */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 5rem;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .section-note {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 0.3rem;
+  }
+
+  /* CHART CARDS */
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; flex-shrink: 0;
+  }
+
+  /* PHASE TIMELINE */
+  .phase-timeline {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .phase {
+    flex: 1;
+    min-width: 120px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phase::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .phase-2021::before { background: #534AB7; }
+  .phase-2022::before { background: #3B6D11; }
+  .phase-2023::before { background: #BA7517; }
+  .phase-2024::before { background: #185FA5; }
+  .phase-2025::before { background: #993556; }
+  .phase-year { font-family: var(--mono); font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+  .phase-count { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .phase-count span { font-size: 14px; color: var(--text2); font-weight: 400; }
+  .phase-name { font-size: 12px; color: var(--text3); }
+
+  /* TWO COLS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin-top: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .legend-sq {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .filter-btn {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--card2);
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124,108,255,0.04); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-main  { background: rgba(37,105,165,0.25); color: #60a5fa; }
+  .badge-new   { background: rgba(45,212,191,0.18); color: #5eead4; }
+  .badge-campus{ background: rgba(167,139,250,0.2); color: #c4b5fd; }
+  .badge-vert  { background: rgba(245,158,11,0.2);  color: #fcd34d; }
+  .badge-intl  { background: rgba(248,113,113,0.2); color: #fca5a5; }
+
+  .year-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .y2021 { background: rgba(83,74,183,0.25); color: #a78bfa; }
+  .y2022 { background: rgba(59,109,17,0.3);  color: #86efac; }
+  .y2023 { background: rgba(186,117,23,0.25); color: #fcd34d; }
+  .y2024 { background: rgba(24,95,165,0.25);  color: #93c5fd; }
+  .y2025 { background: rgba(153,53,86,0.25);  color: #f9a8d4; }
+
+  /* GAP VIZ */
+  .gap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .gap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .gap-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 1rem;
+  }
+  .gap-bar-wrap { margin-bottom: 8px; }
+  .gap-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .gap-bar { height: 6px; border-radius: 3px; background: var(--bg3); overflow: hidden; }
+  .gap-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .fill-existing { background: var(--text3); }
+  .fill-ours { background: linear-gradient(90deg, var(--accent), var(--teal)); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 12px;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ANIMATE IN */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">▋ UNDERGROUND / DATA</span>
+  <div class="nav-links">
+    <a href="#overview">概览</a>
+    <a href="#charts">分布</a>
+    <a href="#list">报道列表</a>
+    <a href="#gap">差距分析</a>
+  </div>
+</nav>
+
+<div class="hero" id="overview">
+  <p class="hero-eyebrow">毕业设计 · 地下偶像系列 · 报道图谱</p>
+  <h1 class="hero-title">既有报道<br><em>全景与空白</em></h1>
+  <p class="hero-sub">系统梳理 2021—2025 年间 29 篇关于"地下偶像"的重要报道，呈现媒体关注的演变轨迹与尚未触及的叙事空白。</p>
+
+  <canvas id="waveCanvas" class="wave-wrap" height="60"></canvas>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-num">29<span>篇</span></div>
+      <div class="kpi-label">有据可查的重要报道</div>
+      <div class="kpi-sub">2021年至2025年间</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-num">5<span>期</span></div>
+      <div class="kpi-label">报道发展阶段</div>
+      <div class="kpi-sub">从亚文化萌芽到全民热议</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-num">0<span>篇</span></div>
+      <div class="kpi-label">聚焦西北地区的报道</div>
+      <div class="kpi-sub">地域报道盲区</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-num">1<span>篇</span></div>
+      <div class="kpi-label">追踪离团者完整经历</div>
+      <div class="kpi-sub">叙事时间轴空白</div>
+    </div>
+  </div>
+</div>
+
+<section id="charts">
+
+  <div class="section-header fade-up">
+    <span class="section-num">01</span>
+    <div>
+      <div class="section-title">报道量的时间演变</div>
+      <div class="section-note">五个阶段，报道量从零散走向井喷</div>
+    </div>
+  </div>
+
+  <div class="phase-timeline fade-up">
+    <div class="phase phase-2021">
+      <div class="phase-year">2021</div>
+      <div class="phase-count">2 <span>篇</span></div>
+      <div class="phase-name">亚文化萌芽期</div>
+    </div>
+    <div class="phase phase-2022">
+      <div class="phase-year">2022</div>
+      <div class="phase-count">1 <span>篇</span></div>
+      <div class="phase-name">行业观察期</div>
+    </div>
+    <div class="phase phase-2023">
+      <div class="phase-year">2023</div>
+      <div class="phase-count">10 <span>篇</span></div>
+      <div class="phase-name">地偶元年</div>
+    </div>
+    <div class="phase phase-2024">
+      <div class="phase-year">2024</div>
+      <div class="phase-count">8 <span>篇</span></div>
+      <div class="phase-name">井喷式增长</div>
+    </div>
+    <div class="phase phase-2025">
+      <div class="phase-year">2025</div>
+      <div class="phase-count">9 <span>篇</span></div>
+      <div class="phase-name">全民热议与主流化</div>
+    </div>
+  </div>
+
+  <div class="chart-card fade-up">
+    <div class="chart-title"><span class="dot" style="background:var(--accent2)"></span>年度报道数量趋势</div>
+    <div style="position:relative;height:200px;">
+      <canvas id="trendChart" role="img" aria-label="2021至2025年地下偶像报道数量折线图，2023年为峰值10篇">年度报道量：2021年2篇，2022年1篇，2023年10篇，2024年8篇，2025年9篇。</canvas>
+    </div>
+  </div>
+
+  <div class="section-header fade-up" style="margin-top:3rem;">
+    <span class="section-num">02</span>
+    <div>
+      <div class="section-title">媒体性质与报道视角分布</div>
+      <div class="section-note">谁在报道，从哪个角度切入</div>
+    </div>
+  </div>
+
+  <div class="two-col fade-up">
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--teal)"></span>按媒体性质分布</div>
+      <div style="position:relative;height:260px;">
+        <canvas id="mediaChart" role="img" aria-label="媒体性质饼图：主流媒体最多，其次为新媒体、校园媒体、垂类媒体">媒体分布：主流媒体18篇，新媒体7篇，校园媒体2篇，垂类媒体2篇。</canvas>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-sq" style="background:#2a78d6"></span>主流媒体 18篇</span>
+        <span class="legend-item"><span class="legend-sq" style="background:#1baf7a"></span>新媒体 7篇</span>
+        <span class="legend-item"><span class="legend-sq" style="background:#4a3aa7"></span>校园媒体 2篇</span>
+        <span class="legend-item"><span class="legend-sq" style="background:#eda100"></span>垂类/国际媒体 2篇</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--amber)"></span>报道体裁分布</div>
+      <div style="position:relative;height:260px;">
+        <canvas id="genreChart" role="img" aria-label="报道体裁横向条形图">体裁分布：人物特稿最多11篇，深度报道9篇，现象报道7篇，其他2篇。</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card fade-up">
+    <div class="chart-title"><span class="dot" style="background:var(--coral)"></span>报道视角分布（主要切入点）</div>
+    <div style="position:relative; height:280px;">
+      <canvas id="angleChart" role="img" aria-label="报道视角横向条形图，生存困境叙事最多">视角分布：生存困境叙事最多（9篇），情感经济分析次之（7篇），个体双面生活（6篇），亚文化与政策（4篇），商业与产业分析（3篇）。</canvas>
+    </div>
+  </div>
+
+  <div class="chart-card fade-up">
+    <div class="chart-title"><span class="dot" style="background:var(--green)"></span>报道城市地域分布</div>
+    <div style="position:relative; height:220px;">
+      <canvas id="cityChart" role="img" aria-label="报道城市分布横向条形图，上海和北京最多，西北为零">城市分布：上海14篇，北京13篇，成都/川渝4篇，广州3篇，南京3篇，港澳2篇，其他东部城市5篇，西北地区0篇。</canvas>
+    </div>
+  </div>
+
+</section>
+
+<section id="list">
+  <div class="section-header fade-up">
+    <span class="section-num">03</span>
+    <div>
+      <div class="section-title">完整报道列表</div>
+      <div class="section-note">按年份或媒体性质筛选浏览</div>
+    </div>
+  </div>
+
+  <div class="filter-bar fade-up" id="filterBar">
+    <button class="filter-btn active" data-filter="all">全部 (29)</button>
+    <button class="filter-btn" data-filter="2021">2021</button>
+    <button class="filter-btn" data-filter="2022">2022</button>
+    <button class="filter-btn" data-filter="2023">2023</button>
+    <button class="filter-btn" data-filter="2024">2024</button>
+    <button class="filter-btn" data-filter="2025">2025</button>
+    <button class="filter-btn" data-filter="主流媒体">主流媒体</button>
+    <button class="filter-btn" data-filter="新媒体">新媒体</button>
+    <button class="filter-btn" data-filter="校园媒体">校园媒体</button>
+    <button class="filter-btn" data-filter="离团视角">含离团叙事</button>
+  </div>
+
+  <div class="table-wrap fade-up">
+    <table id="reportTable">
+      <thead>
+        <tr>
+          <th style="width:50px">#</th>
+          <th style="width:60px">年份</th>
+          <th style="width:130px">媒体</th>
+          <th style="width:80px">性质</th>
+          <th>标题</th>
+          <th style="width:90px">体裁</th>
+          <th style="width:100px">主要视角</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="gap">
+  <div class="section-header fade-up">
+    <span class="section-num">04</span>
+    <div>
+      <div class="section-title">叙事空白与本组差异化</div>
+      <div class="section-note">既有报道的共同局限，与本组报道的对应突破</div>
+    </div>
+  </div>
+
+  <div class="gap-grid fade-up">
+    <div class="gap-card">
+      <div class="gap-card-title">🗺 地域覆盖</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">全为东部城市</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:100%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">聚焦兰州·西北首次呈现</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:30%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">29篇报道中，覆盖西北地区的报道：0篇</p>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-title">⏱ 时间维度</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">聚焦在役当下</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:85%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">追踪离团后 1—3 年</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:60%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">完整追踪离团后生命轨迹的报道：1篇（仅记录到离团瞬间）</p>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-title">🔍 叙事层次</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">现象描述为主</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:70%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">深入机制追问</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:90%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">完整披露演出成本结构与利润分配的报道：0篇</p>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-title">👥 信源构成</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">主要为现役偶像</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:40%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">多方信源交叉</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:85%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">纳入：在役偶像 + 前成员 + 粉丝 + 演出方 + 场地方</p>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-title">📋 体裁融合度</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">单一文字形式</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:30%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">文字+视频+海报</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:100%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">融合：三篇主稿 · 记者手记 · 视频短片 · 系列海报</p>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-card-title">📊 数据深度</div>
+      <div class="gap-bar-wrap">
+        <div class="gap-label"><span>既有报道</span><span style="color:var(--coral)">宏观数据为主</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-existing" style="width:45%"></div></div>
+      </div>
+      <div class="gap-bar-wrap" style="margin-top:8px">
+        <div class="gap-label"><span>本组报道</span><span style="color:var(--teal)">微观财务数据</span></div>
+        <div class="gap-bar"><div class="gap-fill fill-ours" style="width:75%"></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">收集：投入成本 · 演出收入 · 特典定价 · 地域差异对比</p>
+    </div>
+  </div>
+
+  <div class="chart-card fade-up" style="margin-top:2rem">
+    <div class="chart-title"><span class="dot" style="background:var(--accent)"></span>五大叙事空白——既有报道的共同局限</div>
+    <div style="display:grid;gap:1rem;margin-top:0.5rem">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;padding-top:2px">01</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px">地域高度集中于东部</div>
+          <div style="font-size:13px;color:var(--text2)">所有报道均以上海、北京、成都等地为报道地，西北地区的地偶生态从未进入公共视野。</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;padding-top:2px">02</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px">从业者"后期生活"无追踪</div>
+          <div style="font-size:13px;color:var(--text2)">几乎所有报道聚焦在役状态，离团者的身份重建与生命轨迹几乎空白，仅有一篇记录到离团瞬间。</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;padding-top:2px">03</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px">产业结构性分析付之阙如</div>
+          <div style="font-size:13px;color:var(--text2)">现有报道虽提及"门票+特典+周边"的收入结构，但从未完整呈现一场演出的成本收益模型，也未追问"谁在获益、谁在承担风险"。</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;padding-top:2px">04</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px">信源单一，缺乏多方交叉</div>
+          <div style="font-size:13px;color:var(--text2)">受访对象以自愿配合的现役成员为主，演出方、场地方、前成员等关键信源严重缺席，叙事视角失衡。</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);flex-shrink:0;padding-top:2px">05</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px">政策与伦理风险的批判性分析薄弱</div>
+          <div style="font-size:13px;color:var(--text2)">随着地偶走向主流，综艺化、资本介入等问题浮现，但现有报道多持中立或正面立场，缺乏对监管风险的系统讨论。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  数据来源：本组自主梳理 · 《暗处生花——地下偶像青春纪实》毕业设计 · 西北民族大学新闻传播学院 2025
+</footer>
+
+<script>
+const reports = [
+  { id:1, year:'2021', media:'ELLE MEN睿士', type:'垂类媒体', title:'《穷死也要当偶像的年轻人……》', genre:'人物特稿', angle:'生存困境叙事', region:'日本', special:'' },
+  { id:2, year:'2021', media:'517japan', type:'垂类媒体', title:'《疫情笼罩的日本，下海成为了地下偶像的一种出路？》', genre:'现象报道', angle:'生存困境叙事', region:'日本', special:'' },
+  { id:3, year:'2022', media:'界面新闻', type:'主流媒体', title:'《"清朗"之后，"地下"饭圈》', genre:'政策观察', angle:'亚文化与政策', region:'全国', special:'' },
+  { id:4, year:'2023', media:'界面新闻', type:'主流媒体', title:'《地下偶像，野蛮生长》', genre:'现象报道', angle:'行业生态概览', region:'上海/全国', special:'' },
+  { id:5, year:'2023', media:'界面新闻', type:'主流媒体', title:'《当爱明码标价：地下偶像，一场亲密关系的模拟游戏》', genre:'深度报道', angle:'情感经济分析', region:'上海', special:'' },
+  { id:6, year:'2023', media:'十点人物志', type:'新媒体', title:'《逐梦演艺圈失败，她们去做地下偶像》', genre:'人物特稿', angle:'生存困境叙事', region:'北京/上海', special:'' },
+  { id:7, year:'2023', media:'后浪研究所', type:'新媒体', title:'《月薪不过万的北京打工人，周末偷偷做"偶像"赚钱》', genre:'体验式报道', angle:'双面身份叙事', region:'北京', special:'' },
+  { id:8, year:'2023', media:'最人物', type:'新媒体', title:'《北京地下女团：禁止恋爱，贩卖暧昧》', genre:'人物特稿', angle:'情感经济分析', region:'北京', special:'' },
+  { id:9, year:'2023', media:'南方都市报', type:'主流媒体', title:'《地下偶像：光鲜与窘迫交织多数迫于生活离开》', genre:'现象报道', angle:'生存困境叙事', region:'东北', special:'离团视角' },
+  { id:10, year:'2023', media:'深度训练营', type:'新媒体', title:'《兼职"地下偶像"不到50天，女博士决定退团》', genre:'人物特稿', angle:'双面身份叙事', region:'上海', special:'离团视角' },
+  { id:11, year:'2023', media:'南方周末', type:'主流媒体', title:'《"地下偶像"行业解析：一场高性价比的情感体验》', genre:'深度报道', angle:'产业分析', region:'全国', special:'' },
+  { id:12, year:'2023', media:'北京青年报', type:'主流媒体', title:'《年轻人追捧的"地偶"支棱起来了》', genre:'现象报道', angle:'大众化叙事', region:'全国', special:'' },
+  { id:13, year:'2024', media:'惊蛰研究所', type:'新媒体', title:'《地下偶像，向上疯长》', genre:'商业分析', angle:'产业分析', region:'全国', special:'' },
+  { id:14, year:'2024', media:'广州大学新窗报', type:'校园媒体', title:'《来稿｜轨道之外的地下乌托邦》', genre:'人物特稿', angle:'个体精神动因', region:'广州', special:'' },
+  { id:15, year:'2024', media:'黑狗文库/澎湃', type:'主流媒体', title:'《光影交织的舞台上，勇气与友谊翩翩起舞》', genre:'活动报道', angle:'偶像粉丝关系', region:'上海', special:'' },
+  { id:16, year:'2024', media:'南京大学"未来编辑部"', type:'校园媒体', title:'《"无意义的乌托邦"——地下偶像》', genre:'深度报道', angle:'行业生态概览', region:'南京', special:'' },
+  { id:17, year:'2024', media:'川观新闻', type:'主流媒体', title:'《漫展舞台上的"地下偶像"》', genre:'现象报道', angle:'行业生态概览', region:'成都', special:'' },
+  { id:18, year:'2024', media:'澳门日报', type:'主流媒体', title:'《澳門"地下偶像"Irregularity maid》', genre:'现象报道', angle:'行业生态概览', region:'澳门', special:'' },
+  { id:19, year:'2024', media:'三联生活周刊', type:'主流媒体', title:'《程序员下班做"偶像"：一个普通女孩的"双面人生"》', genre:'人物特稿', angle:'双面身份叙事', region:'南京', special:'' },
+  { id:20, year:'2024', media:'星岛环球网', type:'主流媒体', title:'《香港地下偶像搞粉丝约会索价3.5万港元！》', genre:'新闻报道', angle:'情感消费争议', region:'香港', special:'' },
+  { id:21, year:'2025', media:'南方人物周刊', type:'主流媒体', title:'《他们为什么在追地下偶像？》', genre:'深度报道', angle:'粉丝视角', region:'深圳', special:'' },
+  { id:22, year:'2025', media:'南方人物周刊', type:'主流媒体', title:'《哪怕在偶像的市场，也有"消费降级"》', genre:'深度报道', angle:'经济学视角', region:'全国', special:'' },
+  { id:23, year:'2025', media:'南方人物周刊', type:'主流媒体', title:'《地下偶像：年轻人的解忧杂货店》', genre:'深度报道', angle:'情感社会学', region:'全国', special:'' },
+  { id:24, year:'2025', media:'南方都市报', type:'主流媒体', title:'《80元换1分钟面对面"心动"……》', genre:'深度报道', angle:'情感经济分析', region:'广州', special:'' },
+  { id:25, year:'2025', media:'China Daily', type:'垂类媒体', title:'《Small stages, big dreams》', genre:'深度报道', angle:'国际传播视角', region:'北京', special:'' },
+  { id:26, year:'2025', media:'新周刊', type:'主流媒体', title:'《票价不到100块，不追内娱的年轻人沉迷"地下偶像"》', genre:'深度报道', angle:'亚文化与政策', region:'上海', special:'' },
+  { id:27, year:'2025', media:'钛媒体', type:'新媒体', title:'《芒果打造地偶综艺：当地下偶像走向"地上"》', genre:'行业分析', angle:'产业分析', region:'全国', special:'' },
+  { id:28, year:'2025', media:'解放日报/上观新闻', type:'主流媒体', title:'《摘下工牌，去做兼职"偶像"》', genre:'人物特稿', angle:'双面身份叙事', region:'上海', special:'' },
+  { id:29, year:'2025', media:'深度训练营', type:'新媒体', title:'《地下偶像和粉丝："兔子洞"里隔绝次元的幻梦》', genre:'深度报道', angle:'元新闻反思', region:'深圳', special:'' },
+];
+
+function badgeType(t) {
+  if (t==='主流媒体') return '<span class="badge badge-main">主流媒体</span>';
+  if (t==='新媒体') return '<span class="badge badge-new">新媒体</span>';
+  if (t==='校园媒体') return '<span class="badge badge-campus">校园媒体</span>';
+  return '<span class="badge badge-vert">垂类/国际</span>';
+}
+function yearTag(y) {
+  return `<span class="year-tag y${y}">${y}</span>`;
+}
+
+function renderTable(data) {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = data.map(r => `
+    <tr>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--text3)">${String(r.id).padStart(2,'0')}</td>
+      <td>${yearTag(r.year)}</td>
+      <td style="font-size:13px">${r.media}</td>
+      <td>${badgeType(r.type)}</td>
+      <td style="font-size:13px;color:var(--text)">${r.title}${r.special ? ' <span style="font-size:10px;color:var(--teal);margin-left:4px">★'+r.special+'</span>' : ''}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.genre}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.angle}</td>
+    </tr>
+  `).join('');
+}
+renderTable(reports);
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const f = btn.dataset.filter;
+  const filtered = f === 'all' ? reports
+    : reports.filter(r => r.year===f || r.type===f || r.special===f || r.special.includes(f));
+  renderTable(filtered);
+});
+
+// Wave
+const wc = document.getElementById('waveCanvas');
+const wctx = wc.getContext('2d');
+wc.width = wc.offsetWidth * devicePixelRatio;
+wc.height = 60 * devicePixelRatio;
+wctx.scale(devicePixelRatio, devicePixelRatio);
+const W = wc.offsetWidth, H = 60;
+let t = 0;
+function drawWave() {
+  wctx.clearRect(0,0,W,H);
+  const counts = [0,0,2,1,10,8,9]; // placeholder indexed
+  const years = [2021,2022,2023,2024,2025];
+  const maxC = 10;
+  const pts = years.map((y,i) => ({ x: (i/(years.length-1))*W, y: H - ([2,1,10,8,9][i]/maxC)*(H*0.8) }));
+  wctx.beginPath();
+  wctx.moveTo(0, H);
+  wctx.lineTo(pts[0].x, pts[0].y);
+  for (let i=1;i<pts.length;i++) {
+    const cp1x = (pts[i-1].x+pts[i].x)/2, cp1y = pts[i-1].y;
+    const cp2x = (pts[i-1].x+pts[i].x)/2, cp2y = pts[i].y;
+    wctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,pts[i].x,pts[i].y);
+  }
+  wctx.lineTo(W,H);
+  wctx.closePath();
+  const grad = wctx.createLinearGradient(0,0,W,0);
+  grad.addColorStop(0,'rgba(83,74,183,0.3)');
+  grad.addColorStop(0.5,'rgba(124,108,255,0.5)');
+  grad.addColorStop(1,'rgba(167,139,250,0.3)');
+  wctx.fillStyle = grad;
+  wctx.fill();
+  wctx.beginPath();
+  wctx.moveTo(pts[0].x, pts[0].y);
+  for (let i=1;i<pts.length;i++) {
+    const cp1x=(pts[i-1].x+pts[i].x)/2, cp1y=pts[i-1].y;
+    const cp2x=(pts[i-1].x+pts[i].x)/2, cp2y=pts[i].y;
+    wctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,pts[i].x,pts[i].y);
+  }
+  wctx.strokeStyle='rgba(167,139,250,0.9)';
+  wctx.lineWidth=2;
+  wctx.stroke();
+  pts.forEach((p,i) => {
+    wctx.beginPath();
+    wctx.arc(p.x,p.y,4,0,Math.PI*2);
+    wctx.fillStyle='#a78bfa';
+    wctx.fill();
+    wctx.fillStyle='rgba(167,139,250,0.8)';
+    wctx.font='11px Space Mono, monospace';
+    wctx.textAlign='center';
+    wctx.fillText(years[i], p.x, H-4);
+  });
+}
+drawWave();
+
+// Charts
+const isDark = true;
+const grid = '#1e1e2a';
+const tick = '#5c5a78';
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: ['2021','2022','2023','2024','2025'],
+    datasets: [{
+      label: '报道数量',
+      data: [2,1,10,8,9],
+      borderColor: '#7c6cff',
+      backgroundColor: 'rgba(124,108,255,0.12)',
+      borderWidth: 2.5,
+      pointRadius: 6,
+      pointBackgroundColor: '#a78bfa',
+      pointBorderColor: '#0c0c10',
+      pointBorderWidth: 2,
+      fill: true,
+      tension: 0.4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} 篇` } } },
+    scales: {
+      x: { grid: { color: grid }, ticks: { color: tick, font: { size: 12 } } },
+      y: { grid: { color: grid }, ticks: { color: tick, font: { size: 12 }, stepSize: 2 }, beginAtZero: true }
+    }
+  }
+});
+
+new Chart(document.getElementById('mediaChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['主流媒体','新媒体','校园媒体','垂类/国际媒体'],
+    datasets: [{
+      data: [18,7,2,2],
+      backgroundColor: ['#2a78d6','#1baf7a','#4a3aa7','#eda100'],
+      borderColor: '#0c0c10',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} 篇` } }
+    }
+  }
+});
+
+new Chart(document.getElementById('genreChart'), {
+  type: 'bar',
+  data: {
+    labels: ['人物特稿','深度报道','现象报道','商业/行业分析','体验/活动报道','政策观察'],
+    datasets: [{
+      label: '篇数',
+      data: [11,9,7,4,3,1],
+      backgroundColor: ['#2a78d6','#2a78d6','#3b5a8a','#3b5a8a','#1d3a6e','#1d3a6e'],
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 篇` } }
+    },
+    scales: {
+      x: { grid: { color: grid }, ticks: { color: tick, font: { size: 12 }, stepSize: 2 }, beginAtZero: true },
+      y: { grid: { display: false }, ticks: { color: '#9896b0', font: { size: 12 } } }
+    }
+  }
+});
+
+new Chart(document.getElementById('angleChart'), {
+  type: 'bar',
+  data: {
+    labels: ['生存困境叙事','情感经济分析','双面身份叙事','行业生态概览','产业/商业分析','亚文化与政策','粉丝/社会学视角'],
+    datasets: [{
+      data: [6,5,5,5,3,3,2],
+      backgroundColor: '#4a3aa7',
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 篇` } } },
+    scales: {
+      x: { grid: { color: grid }, ticks: { color: tick, stepSize: 1 }, beginAtZero: true },
+      y: { grid: { display: false }, ticks: { color: '#9896b0', font: { size: 12 } } }
+    }
+  }
+});
+
+new Chart(document.getElementById('cityChart'), {
+  type: 'bar',
+  data: {
+    labels: ['上海','北京','成都/川渝','广州','南京','港澳','深圳','全国/其他','西北地区'],
+    datasets: [{
+      data: [14,13,4,3,3,2,2,7,0],
+      backgroundColor: ctx => ctx.label === '西北地区' ? '#c0392b' : '#1baf7a',
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.label === '西北地区' ? ' 0篇 ← 本组报道填补此空白' : ` 约 ${ctx.parsed.x} 次提及` } } },
+    scales: {
+      x: { grid: { color: grid }, ticks: { color: tick }, beginAtZero: true },
+      y: { grid: { display: false }, ticks: { color: ctx => ctx.tick.label === '西北地区' ? '#f87171' : '#9896b0', font: { size: 12 } } }
+    }
+  }
+});
+
+// Intersection observer for fade-up
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
